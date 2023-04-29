@@ -27,14 +27,25 @@ clr.AddReference('RevitAPIUI')  # Adding reference to Revit's UI API DLLs
 from typing import Callable, Iterable, Any
 
 
+def get_robot_structural_analysis_link_revit_command_id() -> Autodesk.Revit.UI.RevitCommandId:
+    """Return the RevitCommandId for Robot Structural Analysis Link.
+       This is expected have id=6416, but is determined dynamically for the time being.
+       None is returned if command id is not resolved."""
+
+    # fetch the command id for the invoking robot grabbed from journal upon issuing command (search for CommandID and
+    # Robot)
+    return Autodesk.Revit.UI.RevitCommandId.LookupCommandId(
+        "CustomCtrl_%CustomCtrl_%CustomCtrl_%Analyze%Structural Analysis%AnalysisAndCodeCheck%RobotStructuralAnalysisLink")
+
+
 def handler(sender: Autodesk.Revit.DB.Document,
             event: Autodesk.Revit.DB.Events.RevitEventArgs) -> None:
     """Handler to be invoked on document save/save as"""
 
     print(f'info: {handler.__name__}() invoked')
 
-    # todo - print preview command temporarily for testing purposes
-    cmd = Autodesk.Revit.UI.RevitCommandId.LookupPostableCommandId(Autodesk.Revit.UI.PostableCommand.PrintPreview)
+    # get RevitCommandId for Robot Structural Analysis Link
+    cmd = get_robot_structural_analysis_link_revit_command_id()
 
     try:
         print(f'info: {handler.__name__}() Posting {cmd.Id=} {cmd.Name=}')
